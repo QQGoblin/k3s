@@ -1,0 +1,27 @@
+#!/bin/bash
+set -e
+
+CHARTS_DIR=build/static/charts
+
+if [ ! -d origin-manifests ]; then
+  mv manifests origin-manifests
+fi
+rm -rf manifests
+mkdir ./manifests
+cp -rf ./origin-manifests/* ./manifests
+
+cd scripts
+./download
+cd -
+
+cp -rf ./custom/manifests/* ./manifests
+cp -rf ./custom/charts/*    ./${CHARTS_DIR}
+go mod tidy
+GOOS=linux CC=gcc CXX=g++ go generate
+
+cd scripts
+
+./build
+./package-cli
+
+cd -

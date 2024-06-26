@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: samba-server
+  namespace: kube-system
+  labels:
+    k8s-app: samba-server
+    kubernetes.io/name: "Samba-Server"
+spec:
+  selector:
+    matchLabels:
+      k8s-app: samba-server
+  template:
+    metadata:
+      labels:
+        k8s-app: samba-server
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      containers:
+        - name: samba-server
+          image: "%{SYSTEM_DEFAULT_REGISTRY}%rancher/samba-server:v0.5"
+          volumeMounts:
+            - name: data
+              mountPath: /share
+            - name: config
+              mountPath: /etc/samba
+          securityContext:
+            privileged: true
+      volumes:
+        - name: data
+          hostPath:
+            path: /opt/k3s/share
+            type: DirectoryOrCreate
+        - name: config
+          configMap:
+            name: samba-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: samba-config
+  namespace: kube-system
+data:
+  container.json: |
+    {
+      "samba-container-config": "v0",
+      "configs": {
+        "demo": {
+          "shares": [
+            "share"
+          ],
+          "globals": [
+            "default"
+          ],
+          "instance_name": "SAMBA"
+        }
+      },
+      "shares": {
+        "share": {
+          "options": {
+            "path": "/share",
+            "valid users": "root"
+          }
+        }
+      },
+      "globals": {
+        "default": {
+          "options": {
+            "security": "user",
+            "server min protocol": "SMB2",
+            "load printers": "no",
+            "printing": "bsd",
+            "printcap name": "/dev/null",
+            "disable spoolss": "yes",
+            "guest ok": "no",
+            "read only": "no",
+            "writeable": "yes"
+          }
+        }
+      },
+      "users": {
+        "all_entries": [
+          {
+            "name": "root",
+            "password": "passwd"
+          }
+        ]
+      },
+      "_footer": 1
+    }
+  smb.conf: |
+    [global]
+    config backend = registry
+  lmhosts: |
+    127.0.0.1 localhost

@@ -1,0 +1,41 @@
+# k3s images
+registry.lqingcloud.cn/rancher/klipper-helm:v0.8.3-build20240228
+registry.lqingcloud.cn/rancher/klipper-lb:v0.4.7
+registry.lqingcloud.cn/rancher/local-path-provisioner:v0.0.26
+registry.lqingcloud.cn/rancher/mirrored-coredns-coredns:1.10.1
+registry.lqingcloud.cn/rancher/mirrored-library-busybox:1.36.1
+registry.lqingcloud.cn/rancher/mirrored-library-traefik:2.10.7
+registry.lqingcloud.cn/rancher/mirrored-metrics-server:v0.7.0
+registry.lqingcloud.cn/rancher/mirrored-pause:3.6
+
+# harbor images
+registry.lqingcloud.cn/rancher/harbor-core:v2.10.2
+registry.lqingcloud.cn/rancher/harbor-db:v2.10.2
+registry.lqingcloud.cn/rancher/harbor-exporter:v2.10.2
+registry.lqingcloud.cn/rancher/harbor-jobservice:v2.10.2
+registry.lqingcloud.cn/rancher/harbor-log:v2.10.2
+registry.lqingcloud.cn/rancher/harbor-portal:v2.10.2
+registry.lqingcloud.cn/rancher/harbor-registryctl:v2.10.2
+registry.lqingcloud.cn/rancher/nginx-photon:v2.10.2
+registry.lqingcloud.cn/rancher/prepare:v2.10.2
+registry.lqingcloud.cn/rancher/redis-photon:v2.10.2
+registry.lqingcloud.cn/rancher/registry-photon:v2.10.2
+registry.lqingcloud.cn/rancher/trivy-adapter-photon:v2.10.2
+
+# https://hub.docker.com/r/b3log/siyuan
+# docker.io/b3log/siyuan:v3.0.17
+registry.lqingcloud.cn/rancher/siyuan:v3.0.17
+
+# https://github.com/samba-in-kubernetes/samba-container
+# quay.io/samba.org/samba-server:v0.5
+registry.lqingcloud.cn/rancher/samba-server:v0.5
+
+# docker.io/v2fly/v2fly-core:v5.16.1
+registry.lqingcloud.cn/rancher/v2fly-core:v5.16.1
+
+# cilium images
+registry.lqingcloud.cn/rancher/cilium:v1.15.5
+registry.lqingcloud.cn/rancher/operator-generic:v1.15.5
+
+# docker.io/moby/buildkit:v0.14.0
+registry.lqingcloud.cn/rancher/buildkit:v0.14.0

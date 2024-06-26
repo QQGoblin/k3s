@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: b3log
+  name: b3log
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: b3log
+  template:
+    metadata:
+      labels:
+        app: b3log
+    spec:
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+      containers:
+        - name: b3log
+          image: "%{SYSTEM_DEFAULT_REGISTRY}%rancher/siyuan:v3.0.17"
+          imagePullPolicy: IfNotPresent
+          args:
+            - "--workspace=/siyuan/workspace/"
+            - "--accessAuthCode=passwd"
+            - "--ssl=true"
+            - "--readonly=false"
+          volumeMounts:
+            - mountPath: /siyuan/workspace
+              name: workspace
+      volumes:
+        - hostPath:
+            path: /opt/k3s/b3log
+            type: DirectoryOrCreate
+          name: workspace
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: b3log
+  name: b3log
+  namespace: kube-system
+spec:
+  ports:
+    - name: http
+      port: 6806
+      protocol: TCP
+      targetPort: 6806
+  selector:
+    app: b3log
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    ingress.kubernetes.io/ssl-redirect: "true"
+    traefik.ingress.kubernetes.io/preserve-host: "true"
+    ingress.kubernetes.io/proxy-body-size: "0"
+  name: b3log
+  namespace: kube-system
+spec:
+  rules:
+    - host: b3log.develop.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: b3log
+                port:
+                  name: http
+            path: /
+            pathType: ImplementationSpecific
+  tls:
+    - hosts:
+        - b3log.develop.com
+      secretName: default-tls-server

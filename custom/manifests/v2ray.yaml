@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: v2ray
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      name: v2ray
+  template:
+    metadata:
+      labels:
+        name: v2ray
+    spec:
+      hostNetwork: true
+      containers:
+        - name: v2ray
+          image: "%{SYSTEM_DEFAULT_REGISTRY}%rancher/v2fly-core:v5.16.1"
+          args: ["run","-c","/config/config.json"]
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config/
+      volumes:
+        - name: config-volume
+          configMap:
+            name: v2ray-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: v2ray-config
+  namespace: kube-system
+data:
+  config.json: |-
+    {
+        "log": {
+            "loglevel": "warning"
+        },
+        "inbounds": [
+            {
+                "tag": "http",
+                "port": 8087,
+                "listen": "0.0.0.0",
+                "protocol": "http"
+            }
+        ],
+        "outbounds": [
+            {
+                "tag": "direct",
+                "protocol": "freedom",
+                "settings": {}
+            },
+            {
+                "tag": "blocked",
+                "protocol": "blackhole",
+                "settings": {}
+            }
+        ],
+        "routing": {
+            "domainStrategy": "IPIfNonMatch",
+            "rules": [
+                {
+                    "id": "1",
+                    "type": "field",
+                    "outboundTag": "direct",
+                    "domain": [
+                        "geosite:private",
+                        "geosite:cn"
+                    ],
+                    "enabled": true
+                },
+                {
+                    "id": "2",
+                    "type": "field",
+                    "outboundTag": "direct",
+                    "ip": [
+                        "geoip:private",
+                        "geoip:cn"
+                    ],
+                    "enabled": true
+                },
+                {
+                    "id": "3",
+                    "type": "field",
+                    "outboundTag": "blocked",
+                    "domain": [
+                        "geosite:category-ads-all"
+                    ],
+                    "enabled": true
+                }
+            ]
+        }
+    }
